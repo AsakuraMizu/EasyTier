@@ -30,6 +30,6 @@ pub const WIN_SERVICE_WORK_DIR_REG_KEY: &str = "SOFTWARE\\EasyTier\\Service\\Wor
 pub const EASYTIER_VERSION: &str = git_version::git_version!(
     args = ["--abbrev=8", "--always", "--dirty=~"],
     prefix = concat!(env!("CARGO_PKG_VERSION"), "-"),
-    suffix = "",
+    suffix = "-chuni",
     fallback = env!("CARGO_PKG_VERSION")
 );

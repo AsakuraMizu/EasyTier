@@ -24,7 +24,7 @@ use byteorder::WriteBytesExt as _;
 use bytes::{BufMut, BytesMut};
 use futures::{lock::BiLock, ready, SinkExt, Stream, StreamExt};
 use pin_project_lite::pin_project;
-use pnet::packet::ipv4::Ipv4Packet;
+use pnet::packet::{ipv4::Ipv4Packet, udp::UdpPacket, Packet};
 use tokio::{
     io::{AsyncRead, AsyncWrite, ReadBuf},
     sync::Mutex,
@@ -567,6 +567,13 @@ impl NicCtx {
                 tracing::info!("[USER_PACKET] not ipv4 packet: {:?}", ipv4);
                 return;
             }
+            if let Some(udp) = UdpPacket::new(ipv4.payload()) {
+                if matches!(udp.get_destination(), 50201 | 40112) {
+                    tracing::trace!("[USER_PACKET] discard chunithm broadcast packet");
+                    return;
+                }
+            }
+
             let dst_ipv4 = ipv4.get_destination();
             tracing::trace!(
                 ?ret,
